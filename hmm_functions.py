@@ -43,7 +43,7 @@ def get_default_HMM_parameters():
     return HMMParam(state_names = ['Human', 'Archaic'], 
                     starting_probabilities = [0.99, 0.01], 
                     transitions = [[0.99,0.01],[0.01,0.99]], 
-                    emissions = [0.1, 1])
+                    emissions = [1, 21])
 
 
 # Save HMMParam to a json file
@@ -242,7 +242,7 @@ def TrainBaumWelsch(hmm_parameters, obs, mutrates):
     return HMMParam(hmm_parameters.state_names,new_starting_probabilities, new_transitions_matrix, new_emissions_matrix)
 
 
-def TrainModel(obs, mutrates, hmm_parameters, epsilon = 1e-3, maxiterations = 100):
+def TrainModel(obs, mutrates, hmm_parameters, epsilon = 1e-3, maxiterations = 1000):
 
     # Get probability of data with initial parameters
     previous_loglikelihood = GetProbability(hmm_parameters, obs, mutrates)

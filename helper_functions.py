@@ -1,15 +1,27 @@
 import numpy as np
 import os
+from collections import defaultdict
 
 # ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Functions for handling observertions/bed files
 # ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 def load_obs_mut(obs_file, mutrates_file, window_size):
+    # Build contig -> global obs index offset map AND per-contig window count
+    contig_offsets = {}
+    contig_window_counts = defaultdict(int)
+    offset = 0
+
     with open(obs_file) as infile:
-        num_windows = sum(1 for _ in infile)
-            
+        for line in infile:
+            contig = line.split('\t')[0]
+            if contig not in contig_offsets:
+                contig_offsets[contig] = offset
+            contig_window_counts[contig] += 1
+            offset += 1
+
+    num_windows = offset
     obs_arr = np.zeros(num_windows, dtype=np.int16)
-    
+
     with open(obs_file) as infile:
         for idx, line in enumerate(infile):
             count = line.split('\t')[3]
@@ -24,10 +36,15 @@ def load_obs_mut(obs_file, mutrates_file, window_size):
             contig, start, end, mutrate = line.strip().split('\t')
             start, end, mutrate = int(start), int(end), float(mutrate)
 
-            # Convert mutation-rate windows to observation windows
-            obs_idx_start = start // window_size
-            obs_idx_end = (end + window_size - 1) // window_size 
-            obs_idx_end = min(obs_idx_end, num_windows)
+            if contig not in contig_offsets:
+                continue
+
+            contig_offset = contig_offsets[contig]
+            contig_max_idx = contig_offset + contig_window_counts[contig]  # true end for this contig
+
+            obs_idx_start = contig_offset + start // window_size
+            obs_idx_end   = contig_offset + end // window_size
+            obs_idx_end   = min(obs_idx_end, contig_max_idx)  # cap at contig boundary, not global
 
             mutrates_arr[obs_idx_start:obs_idx_end] = mutrate
 
