@@ -2,6 +2,7 @@ import sys
 from hmm_functions import TrainModel, write_HMM_to_file, read_HMM_parameters_from_file, Calculate_Posterior_probabillities, PMAP_path, Viterbi_path, Write_posterior_probs, Emission_probs_poisson
 from helper_functions import load_obs_mut
 from make_mutationrate import make_mutation_rate
+import numpy as np
 
 
 def train(obs_file, mutrates_file, out_file, window_size):
@@ -9,12 +10,12 @@ def train(obs_file, mutrates_file, out_file, window_size):
     obs, mutrates = load_obs_mut(obs_file, mutrates_file, window_size)
 
     print('-' * 40)
-    print(f'> number of windows: {len(obs)}. Number of kmers = {sum(obs)}')
+    print(f'> number of windows: {len(obs)}. Number of kmers = {obs.astype(np.int64).sum()}')
     print('> output is', out_file) 
     print('> window size is', window_size, 'bp') 
     print('-' * 40)
 
-    # hmm_parameters = TrainModel(obs, mutrates, hmm_parameters)
+    hmm_parameters = TrainModel(obs, mutrates, hmm_parameters)
     write_HMM_to_file(hmm_parameters, out_file)
     
 
