@@ -1,6 +1,7 @@
 import numpy as np
 import os
 from collections import defaultdict
+import math
 
 # ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Functions for handling observertions/bed files
@@ -46,8 +47,8 @@ def load_obs_mut(obs_file, mutrates_file, window_size):
             contig_max_idx = min(contig_max_idx, num_windows)  # still safe globally
 
             obs_idx_start = contig_offset + start // window_size
-            obs_idx_end   = contig_offset + end // window_size
-            obs_idx_end   = min(obs_idx_end, contig_max_idx)  # cap at contig boundary, not global
+            obs_idx_end = contig_offset + math.ceil(end / window_size)
+            obs_idx_end = min(obs_idx_end, num_windows)
 
             mutrates_arr[obs_idx_start:obs_idx_end] = mutrate
     
