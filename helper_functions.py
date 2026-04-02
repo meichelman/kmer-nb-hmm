@@ -43,8 +43,8 @@ def load_obs_mut(obs_file, mutrates_file, window_size):
             contig_max_idx = contig_offset + contig_window_counts[contig]  # true end for this contig
 
             obs_idx_start = contig_offset + start // window_size
-            obs_idx_end   = contig_offset + end // window_size
-            obs_idx_end   = min(obs_idx_end, contig_max_idx)  # cap at contig boundary, not global
+            obs_idx_end = contig_offset + end // window_size
+            obs_idx_end = min(obs_idx_end, num_windows)  # global cap is sufficient
 
             mutrates_arr[obs_idx_start:obs_idx_end] = mutrate
 
