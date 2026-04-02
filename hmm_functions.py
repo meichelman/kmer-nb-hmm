@@ -300,7 +300,7 @@ def Viterbi_path(emissions, hmm_parameters):
 # Write segments to output file
 # ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def Write_posterior_probs(obs, mutrates, post_seq, post_path, viterbi_path, hmm_parameters, filename):
+def Write_posterior_probs(obs, mutrates, post_seq, post_path, viterbi_path, hmm_parameters, filename, window_size):
     post_seq = post_seq.T
 
     with open(filename, 'w') as out:
@@ -309,6 +309,6 @@ def Write_posterior_probs(obs, mutrates, post_seq, post_path, viterbi_path, hmm_
 
         i = 0
         for (obs, m, posterior, post_state, viterbi_state) in zip(obs, mutrates, post_seq, post_path, viterbi_path):
-            posterior_to_print = '\t'.join([str(round(x, 4)) for x in posterior])
-            out.write(f'{i * 2000}\t{(i + 1) * 2000}\t{obs}\t{m}\t{posterior_to_print}\t{hmm_parameters.state_names[post_state]}\t{hmm_parameters.state_names[viterbi_state]}\n')
+            posterior_to_print = '\t'.join([str(round(x, 8)) for x in posterior])
+            out.write(f'{i * window_size}\t{(i + 1) * window_size}\t{obs}\t{m}\t{posterior_to_print}\t{hmm_parameters.state_names[post_state]}\t{hmm_parameters.state_names[viterbi_state]}\n')
             i += 1

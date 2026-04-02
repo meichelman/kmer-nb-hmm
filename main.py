@@ -35,7 +35,7 @@ def decode(obs_file, mutrates_file, param_file, out_file, window_size):
     pmap_path = PMAP_path(posterior_probs)
     viterbi_path = Viterbi_path(emissions, hmm_parameters)
     
-    Write_posterior_probs(obs, mutrates, posterior_probs, pmap_path, viterbi_path, hmm_parameters, out_file)
+    Write_posterior_probs(obs, mutrates, posterior_probs, pmap_path, viterbi_path, hmm_parameters, out_file, window_size)
 
 
 def main():
