@@ -97,7 +97,7 @@ def Emission_probs(emissions, observations, mutrates, window_size):
         for index in range(n):
             # lam = emissions[state] * mutrates[index]
             # probabilities[index,state] = poisson_probability_underflow_safe(observations[index], lam)
-            p = emissions[state] * mutrates[index]
+            p = emissions[state] * observations[index] / window_size
             k = window_size - 1 - observations[index]
             probabilities[index,state] = NB_probability_underflow_safe(k, observations[index], p)
             
