@@ -1,6 +1,7 @@
 import numpy as np
 from numba import njit
 import json
+import math
 
 # ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 # HMM Parameter Class
@@ -73,17 +74,17 @@ def poisson_probability_underflow_safe(n, lam):
 
 @njit
 def NB_probability_underflow_safe(k, r, p):
-    # naive:   comb(n + r - 1, n) * (1 - p)**r * p**n
-    
-    # iterative, to keep the components from getting too large or small:
-    p_n = 1.0
+    # Compute log P(X=n) to avoid underflow entirely
+    q = 1.0 - p
+    log_p = math.log(p)
+    log_q = math.log(q)
+
+    # log comb(n+r-1, n) computed iteratively
+    log_comb = 0.0
     for i in range(k):
-        p_n *= (r + i) * (1 - p) / (i + 1)
+        log_comb += math.log(r + i) - math.log(i + 1)
 
-    for j in range(r):
-        p_n *= p
-
-    return p_n
+    return math.exp(log_comb + k * log_q + r * log_p)
 
 
 @njit
@@ -100,7 +101,7 @@ def Emission_probs(emissions, observations, mutrates, window_size):
             k = window_size - 1 - observations[index]
             probabilities[index,state] = NB_probability_underflow_safe(k, observations[index], p)
             
-    # probabilities = np.where(probabilities < 1e-30, 1e-30, probabilities)
+    probabilities = np.where(probabilities < 1e-30, 1e-30, probabilities)
     return probabilities
 
 
