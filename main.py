@@ -1,5 +1,5 @@
 import sys
-from hmm_functions import TrainModel, write_HMM_to_file, read_HMM_parameters_from_file, Calculate_Posterior_probabillities, PMAP_path, Viterbi_path, Write_posterior_probs, Emission_probs_poisson
+from hmm_functions import TrainModel, write_HMM_to_file, read_HMM_parameters_from_file, Calculate_Posterior_probabillities, PMAP_path, Viterbi_path, Write_posterior_probs, Emission_probs
 from helper_functions import load_obs_mut
 from make_mutationrate import make_mutation_rate
 import numpy as np
@@ -30,7 +30,7 @@ def decode(obs_file, mutrates_file, param_file, out_file, window_size):
     print('> Decode with posterior decoding')
     print('-' * 40)
     
-    emissions = Emission_probs_poisson(hmm_parameters.emissions, obs, mutrates)
+    emissions = Emission_probs(hmm_parameters.emissions, obs, mutrates)
     posterior_probs = Calculate_Posterior_probabillities(emissions, hmm_parameters)
     pmap_path = PMAP_path(posterior_probs)
     viterbi_path = Viterbi_path(emissions, hmm_parameters)
