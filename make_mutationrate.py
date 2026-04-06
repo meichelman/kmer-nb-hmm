@@ -36,6 +36,6 @@ def make_mutation_rate(obs_file, out_file, window_size):
         for pos, kmer_count in zip(assembly_positions, kmer_arr):
             contig, start, end = pos
             actual_window_size = end - start  # use real span, not nominal window_size
-            # mutrate = round(kmer_count / actual_window_size / assembly_avg, 5)
-            mutrate = round(assembly_avg, 5)
+            mutrate = round(kmer_count / actual_window_size / assembly_avg, 5)
+            # mutrate = round(assembly_avg, 5)
             out.write(f'{contig}\t{start}\t{end}\t{mutrate}\n')
