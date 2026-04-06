@@ -229,13 +229,13 @@ def logoutput(hmm_parameters, loglikelihood, iteration):
         print_emissions = '\t'.join(['emis{0}'.format(x + 1) for x in range(n_states)])
         print_starting_probabilities = '\t'.join(['start{0}'.format(x + 1) for x in range(n_states)])
         print_transitions = '\t'.join(['trans{0}_{0}'.format(x + 1) for x in range(n_states)])
-        print('iter', 'log-l', print_starting_probabilities, print_emissions, print_transitions, sep = '\t')
+        print(f'iter\tlog-l\t{print_starting_probabilities}\t{print_emissions}\t{print_transitions}')
 
     # Print parameters
     print_emissions = '\t'.join([str(x) for x in np.matrix.round(hmm_parameters.emissions, 4)])
     print_starting_probabilities = '\t'.join([str(x) for x in np.matrix.round(hmm_parameters.starting_probabilities, 3)])
     print_transitions = '\t'.join([str(x) for x in np.matrix.round(hmm_parameters.transitions, 4).diagonal()])
-    print(iteration, round(loglikelihood, 4), print_starting_probabilities, print_emissions, print_transitions, sep = '\t')
+    print(f'{iteration}\t{round(loglikelihood, 4)}\t{print_starting_probabilities}\t{print_emissions}\t{print_transitions}')
 
 
 def TrainBaumWelsch(hmm_parameters, obs, mutrates, window_size):
