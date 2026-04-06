@@ -229,7 +229,7 @@ def logoutput(hmm_parameters, loglikelihood, iteration):
         print_emissions = '\t'.join(['emis{0}'.format(x + 1) for x in range(n_states)])
         print_starting_probabilities = '\t'.join(['start{0}'.format(x + 1) for x in range(n_states)])
         print_transitions = '\t'.join(['trans{0}_{0}'.format(x + 1) for x in range(n_states)])
-        print('iteration', 'loglikelihood', print_starting_probabilities, print_emissions, print_transitions, sep = '\t')
+        print('iter', 'log-l', print_starting_probabilities, print_emissions, print_transitions, sep = '\t')
 
     # Print parameters
     print_emissions = '\t'.join([str(x) for x in np.matrix.round(hmm_parameters.emissions, 4)])
@@ -258,7 +258,8 @@ def TrainBaumWelsch(hmm_parameters, obs, mutrates, window_size):
     new_emissions_matrix = np.zeros((n_states))
     for state in range(n_states):
         top = np.sum(posterior_probs[:,state] * obs)
-        bottom = np.sum(posterior_probs[:,state] * mutrates)
+        # bottom = np.sum(posterior_probs[:,state] * mutrates)
+        bottom = np.sum(posterior_probs[:,state])
         new_emissions_matrix[state] = top/bottom
 
     # Update Transition probs 
