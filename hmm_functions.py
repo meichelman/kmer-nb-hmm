@@ -106,9 +106,10 @@ def Emission_probs(emissions, observations, mutrates, window_size):
     arc_state = 1
     hum_state = 0
     for index in range(n):
-        p = emissions[arc_state]
+        # p = emissions[arc_state] * mutrates[index] * observations[index] / window_size
+        p = observations[index] / (window_size - 21 + 1)
         k = window_size - 1 - observations[index]
-        probabilities[index,arc_state] = NB_probability_underflow_safe(k, observations[index], p)
+        probabilities[index,arc_state] = NB_probability_underflow_safe(k, emissions[index], p)
         probabilities[index,hum_state] = 1 - probabilities[index,arc_state]
             
     probabilities = np.where(probabilities < 1e-30, 1e-30, probabilities)
@@ -246,11 +247,15 @@ def TrainBaumWelsch(hmm_parameters, obs, mutrates, window_size):
     n_states = len(hmm_parameters.starting_probabilities)
 
     emissions = Emission_probs(hmm_parameters.emissions, obs, mutrates, window_size)
+    print(f'emissions[:10]: {emissions[:10]}')
     forward_probs, scales = forward(emissions, hmm_parameters.transitions, hmm_parameters.starting_probabilities)
+    print(f'forward_probs[:10]: {forward_probs[:10]}')
     backward_probs = backward(emissions, hmm_parameters.transitions, scales)
+    print(f'backward_probs[:10]: {backward_probs[:10]}')
 
     # Update starting probs
     posterior_probs = forward_probs * backward_probs
+    print(f'posterior_probs[:10]: {posterior_probs[:10]}')
     normalize = np.sum(posterior_probs)
     new_starting_probabilities = np.sum(posterior_probs, axis=0)/normalize 
 
@@ -279,7 +284,8 @@ def TrainModel(obs, mutrates, hmm_parameters, window_size, epsilon = 1e-3, maxit
     logoutput(hmm_parameters, previous_loglikelihood, 0)
     
     # Train parameters using Baum Welch algorithm
-    for i in range(1,maxiterations):
+    # for i in range(1,maxiterations):
+    for i in range(2):
         hmm_parameters = TrainBaumWelsch(hmm_parameters, obs, mutrates, window_size)
         new_loglikelihood = GetProbability(hmm_parameters, obs, mutrates, window_size)
         logoutput(hmm_parameters, new_loglikelihood, i)
