@@ -50,7 +50,7 @@ def main():
     elif mode == 'mutrate':
         # python3 main.py mutrate obs.bed 
 
-        if len(args) < 3:
+        if len(args) < 2:
             sys.exit('\n\nMust input:\n\tObservations\n\n')
         obs = args[2]
         out = 'mutrates.txt'
@@ -62,7 +62,7 @@ def main():
     elif mode == 'train':
         # python3 main.py train obs.bed mutrates.txt
 
-        if len(args) < 5:
+        if len(args) < 4:
             sys.exit('\n\nMust input:\n\tObservations\n\tMutation rate\n\n')
         obs, mutrates = args[2], args[3]
         out = 'trained.json'
