@@ -16,7 +16,7 @@ class HMMParam:
         self.starting_probabilities = np.array(starting_probabilities)
         self.transitions = np.array(transitions)
         self.emissions = np.array(emissions)
-        self.dispersions = np.array(dispersions) if dispersions is not None else np.array([10.0] * len(emissions))
+        self.dispersions = np.array(dispersions)
 
     def __str__(self):
         out = f'> state_names = {self.state_names.tolist()}\n'
@@ -47,10 +47,10 @@ def read_HMM_parameters_from_file(filename):
 
 def get_default_HMM_parameters():
     return HMMParam(state_names = ['Human', 'Archaic'], 
-                    starting_probabilities = [0.5, 0.5], 
-                    transitions = [[0.5,0.5],[0.5,0.5]], 
-                    emissions = [5, 5],
-                    dispersions = [10.0, 10.0])
+                    starting_probabilities = [0.99, 0.01], 
+                    transitions = [[0.9,0.1],[0.1,0.9]], 
+                    emissions = [1, 10],
+                    dispersions = [10.0, 5.0])
 
 
 def write_HMM_to_file(hmmparam, outfile):
@@ -81,45 +81,28 @@ def poisson_probability_underflow_safe(n, lam):
 def NB_probability_underflow_safe(k, mu, r):
     if mu <= 0:
         return 1.0 if k == 0 else 0.0
+    # Need to change this if and when we change how the mutation rate is calculated
     
     p = r / (r + mu)
     
+    # Work in log space to avoid underflow/overflow issues
     log_nb = (gammaln(r + k) - gammaln(r) - gammaln(k + 1)
               + r * np.log(p)
               + k * np.log(1 - p))
+    
     return np.exp(log_nb)
-    # return log_nb
-    # NOTE: we return log_nb instead of the actual probability to avoid underflow, the exact value is less important than the relative values when comparing states
 
 
 # @njit
-def Emission_probs(emissions, observations, dispersions,mutrates, window_size):
+def Emission_probs(emissions, observations, dispersions, mutrates):
     n = len(observations)
     n_states = len(emissions)          
-    probabilities = np.zeros( (n, n_states) ) 
-    # log_probs = np.zeros((n, n_states))
-    
-    # for state in range(n_states): 
-    #     for index in range(n):
-    #         # lam = emissions[state] * mutrates[index]
-    #         # probabilities[index,state] = poisson_probability_underflow_safe(observations[index], lam)
-    #         p = emissions[state] * observations[index] / window_size
-    #         k = window_size - 1 - observations[index]
-    #         if p > 0:
-    #             probabilities[index,state] = NB_probability_underflow_safe(k, observations[index], p)
-    #         else:
-    #             probabilities[index,state] = 0.0
+    probabilities = np.zeros((n, n_states)) 
     
     for state in range(n_states):
         for t in range(n):
             mu = emissions[state] * mutrates[t]
             probabilities[t, state] = NB_probability_underflow_safe(observations[t], mu, dispersions[state])
-            
-    # Subtract row-wise max before exponentiating (log-sum-exp trick)
-    # for t in range(n):
-    #     row_max = np.max(log_probs[t, :])
-    #     for state in range(n_states):
-    #         probabilities[t, state] = np.exp(log_probs[t, state] - row_max)
     
     return probabilities
 
@@ -145,6 +128,7 @@ def update_nb_emissions(posterior_probs, obs, mutrates, current_emissions, curre
 
     for state in range(n_states):
         gamma_s = posterior_probs[:, state]
+        print(f'state {state}: gamma_s sum={gamma_s.sum():.4f}, min={gamma_s.min():.4f}, max={gamma_s.max():.4f}')
         x0 = [
             np.log(current_emissions[state]),
             np.log(current_dispersions[state]),
@@ -164,8 +148,6 @@ def update_nb_emissions(posterior_probs, obs, mutrates, current_emissions, curre
 @njit
 def fwd_step(alpha_prev, E, trans_mat):
     alpha_new = (alpha_prev @ trans_mat) * E
-    # looks like:
-    # alpha_new = (0.5, 0.5) @ [[0.9999 0.0001] [0.02 0.98]] = (0.50995 0.49005) * ...
     n = np.sum(alpha_new)
     return alpha_new / n, n
 
@@ -200,15 +182,6 @@ def backward(emissions, transitions, scales):
     for i in range(n - 1, 0, -1):
         beta[i - 1,:] = bwd_step(beta[i,:], emissions[i,:], transitions, scales[i])
     return beta
-
-
-# def GetProbability(hmm_parameters, obs, mutrates, window_size):
-
-#     emissions = Emission_probs(hmm_parameters.emissions, obs, mutrates, window_size)
-#     _, scales = forward(emissions, hmm_parameters.transitions, hmm_parameters.starting_probabilities)
-#     forward_probility_of_obs = np.sum(np.log(scales))
-
-#     return forward_probility_of_obs
 
 
 def GetProbability(hmm_parameters, obs, mutrates, window_size):
@@ -281,13 +254,15 @@ def logoutput(hmm_parameters, loglikelihood, iteration):
         print_emissions = '\t'.join(['emis{0}'.format(x + 1) for x in range(n_states)])
         print_starting_probabilities = '\t'.join(['start{0}'.format(x + 1) for x in range(n_states)])
         print_transitions = '\t'.join(['trans{0}_{0}'.format(x + 1) for x in range(n_states)])
-        print(f'iter\tlog-l\t{print_starting_probabilities}\t{print_emissions}\t{print_transitions}')
+        print_dispersions = '\t'.join(['disp{0}'.format(x + 1) for x in range(n_states)])
+        print(f'iter\tlog-l\t{print_starting_probabilities}\t{print_emissions}\t{print_transitions}\t{print_dispersions}')
 
     # Print parameters
     print_emissions = '\t'.join([str(x) for x in np.matrix.round(hmm_parameters.emissions, 4)])
     print_starting_probabilities = '\t'.join([str(x) for x in np.matrix.round(hmm_parameters.starting_probabilities, 3)])
     print_transitions = '\t'.join([str(x) for x in np.matrix.round(hmm_parameters.transitions, 4).diagonal()])
-    print(f'{iteration}\t{round(loglikelihood, 4)}\t{print_starting_probabilities}\t{print_emissions}\t{print_transitions}')
+    print_dispersions = '\t'.join([str(x) for x in np.matrix.round(hmm_parameters.dispersions, 4)])
+    print(f'{iteration}\t{round(loglikelihood, 4)}\t{print_starting_probabilities}\t{print_emissions}\t{print_transitions}\t{print_dispersions}')
 
 
 def TrainBaumWelsch(hmm_parameters, obs, mutrates, window_size):
