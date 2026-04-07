@@ -184,8 +184,8 @@ def backward(emissions, transitions, scales):
     return beta
 
 
-def GetProbability(hmm_parameters, obs, mutrates, window_size):
-    emissions = Emission_probs(hmm_parameters.emissions, obs, hmm_parameters.dispersions, mutrates, window_size)
+def GetProbability(hmm_parameters, obs, mutrates):
+    emissions = Emission_probs(hmm_parameters.emissions, obs, hmm_parameters.dispersions, mutrates)
     _, scales = forward(emissions, hmm_parameters.transitions, hmm_parameters.starting_probabilities)
     return np.sum(np.log(scales))
 
@@ -265,11 +265,11 @@ def logoutput(hmm_parameters, loglikelihood, iteration):
     print(f'{iteration}\t{round(loglikelihood, 4)}\t{print_starting_probabilities}\t{print_emissions}\t{print_transitions}\t{print_dispersions}')
 
 
-def TrainBaumWelsch(hmm_parameters, obs, mutrates, window_size):
+def TrainBaumWelsch(hmm_parameters, obs, mutrates):
 
     n_states = len(hmm_parameters.starting_probabilities)
 
-    emissions = Emission_probs(hmm_parameters.emissions, obs, hmm_parameters.dispersions, mutrates, window_size)
+    emissions = Emission_probs(hmm_parameters.emissions, obs, hmm_parameters.dispersions, mutrates)
     forward_probs, scales = forward(emissions, hmm_parameters.transitions, hmm_parameters.starting_probabilities)
     backward_probs = backward(emissions, hmm_parameters.transitions, scales)
 
@@ -298,17 +298,17 @@ def TrainBaumWelsch(hmm_parameters, obs, mutrates, window_size):
     return HMMParam(hmm_parameters.state_names, new_starting_probabilities, new_transitions_matrix, new_emissions, new_dispersions)
 
 
-def TrainModel(obs, mutrates, hmm_parameters, window_size, epsilon = 1e-3, maxiterations = 50):
+def TrainModel(obs, mutrates, hmm_parameters, epsilon = 1e-3, maxiterations = 50):
 
     # Get probability of data with initial parameters
-    previous_loglikelihood = GetProbability(hmm_parameters, obs, mutrates, window_size)
+    previous_loglikelihood = GetProbability(hmm_parameters, obs, mutrates)
     logoutput(hmm_parameters, previous_loglikelihood, 0)
     
     # Train parameters using Baum Welch algorithm
     # for i in range(1,maxiterations):
     for i in range(1, maxiterations):
-        hmm_parameters = TrainBaumWelsch(hmm_parameters, obs, mutrates, window_size)
-        new_loglikelihood = GetProbability(hmm_parameters, obs, mutrates, window_size)
+        hmm_parameters = TrainBaumWelsch(hmm_parameters, obs, mutrates)
+        new_loglikelihood = GetProbability(hmm_parameters, obs, mutrates)
         logoutput(hmm_parameters, new_loglikelihood, i)
 
         if abs(new_loglikelihood - previous_loglikelihood) < epsilon:
