@@ -323,7 +323,7 @@ def TrainBaumWelsch(hmm_parameters, obs, mutrates, window_size):
     return HMMParam(hmm_parameters.state_names, new_starting_probabilities, new_transitions_matrix, new_emissions, new_dispersions)
 
 
-def TrainModel(obs, mutrates, hmm_parameters, window_size, epsilon = 1e-3, maxiterations = 1000):
+def TrainModel(obs, mutrates, hmm_parameters, window_size, epsilon = 1e-3, maxiterations = 50):
 
     # Get probability of data with initial parameters
     previous_loglikelihood = GetProbability(hmm_parameters, obs, mutrates, window_size)
@@ -331,7 +331,7 @@ def TrainModel(obs, mutrates, hmm_parameters, window_size, epsilon = 1e-3, maxit
     
     # Train parameters using Baum Welch algorithm
     # for i in range(1,maxiterations):
-    for i in range(1, 2):
+    for i in range(1, maxiterations):
         hmm_parameters = TrainBaumWelsch(hmm_parameters, obs, mutrates, window_size)
         new_loglikelihood = GetProbability(hmm_parameters, obs, mutrates, window_size)
         logoutput(hmm_parameters, new_loglikelihood, i)
