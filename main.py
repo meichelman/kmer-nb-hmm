@@ -7,7 +7,7 @@ import numpy as np
 
 def train(obs_file, mutrates_file, out_file):
     hmm_parameters = read_HMM_parameters_from_file(None)
-    obs, mutrates = load_obs_mut(obs_file, mutrates_file)
+    obs, mutrates = load_obs_mut(obs_file, mutrates_file, window_size=2000)
 
     print('-' * 40)
     print(f'> number of windows: {len(obs)}. Number of kmers = {obs.astype(np.int64).sum()}')
@@ -20,7 +20,7 @@ def train(obs_file, mutrates_file, out_file):
 
 def decode(obs_file, mutrates_file, param_file, out_file):
     hmm_parameters = read_HMM_parameters_from_file(param_file)
-    obs, mutrates = load_obs_mut(obs_file, mutrates_file)
+    obs, mutrates = load_obs_mut(obs_file, mutrates_file, window_size=2000)
 
     print('-' * 40)
     print(f'> number of windows: {len(obs)}. Number of kmers = {obs.astype(np.int64).sum()}')
