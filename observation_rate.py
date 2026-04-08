@@ -82,16 +82,17 @@ def main():
     
     args = parser.parse_args()
     
-    if hasattr(args, 'obs'):
-        print('-' * 40)
-        print(f'> Observations file: {args.obs}')
-        print(f'> Estimated observation rates written to: {args.out}')
-        print(f'> Bin size: {args.bin_size}')
-        print('-' * 40)
+    if args.obs is None:
+        parser.print_help()
+        return
+    
+    print('-' * 40)
+    print(f'> Observations file: {args.obs}')
+    print(f'> Estimated observation rates written to: {args.out}')
+    print(f'> Bin size: {args.bin_size}')
+    print('-' * 40)
 
-        make_obs_rate(args.obs, args.out, args.bin_size)
-    else:
-        print(print_script_usage())
+    make_obs_rate(args.obs, args.out, args.bin_size)
         
     return
 

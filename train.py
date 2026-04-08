@@ -54,17 +54,18 @@ def main():
     
     args = parser.parse_args()
     
-    if hasattr(args, 'obs') and hasattr(args, 'obs_rates'):
-        print('-' * 40)
-        print(f'> Observations file: {args.obs}')
-        print(f'> Observation rates file: {args.obs_rates}')
-        print(f'> HMM parameters file: {args.param if args.param else "Using default human/neanderthal-like parameters"}')
-        print(f'> Output file for trained parameters: {args.out}')
-        print('-' * 40)
+    if args.obs is None or args.obs_rates is None:
+        parser.print_help()
+        return
+    
+    print('-' * 40)
+    print(f'> Observations file: {args.obs}')
+    print(f'> Observation rates file: {args.obs_rates}')
+    print(f'> HMM parameters file: {args.param if args.param else "Using default human/neanderthal-like parameters"}')
+    print(f'> Output file for trained parameters: {args.out}')
+    print('-' * 40)
 
-        train(args.obs, args.obs_rates, args.param, args.out)
-    else:
-        print(print_script_usage())
+    train(args.obs, args.obs_rates, args.param, args.out)
     
     return
         
