@@ -13,7 +13,7 @@ def train(obs_file, obs_rates_file, param_file, out_file):
 
     print('-' * 40)
     print(f'> Number of windows: {len(obs)}')
-    print(f'> Number of k-mers = {obs.astype(np.int64).sum()}')
+    print(f'> Number of k-mers: {obs.astype(np.int64).sum()}')
     print('-' * 40)
 
     print('Training HMM...')
@@ -61,7 +61,7 @@ def main():
     print('-' * 40)
     print(f'> Observations file: {args.obs}')
     print(f'> Observation rates file: {args.obs_rates}')
-    print(f'> HMM parameters file: {args.param if args.param else "Using default human/neanderthal-like parameters"}')
+    print(f'> HMM parameters file: {args.param if args.param else "using default human/neanderthal-like parameters"}')
     print(f'> Output file for trained parameters: {args.out}')
     print('-' * 40)
 

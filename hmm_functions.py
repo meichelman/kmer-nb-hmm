@@ -213,7 +213,7 @@ def logoutput(hmm_parameters, loglikelihood, iteration):
         header_parts = [
             '\t'.join([f'start{i+1}' for i in range(num_states)]),
             '\t'.join([f'emis{i+1}'  for i in range(num_states)]),
-            '\t\t'.join([f'trans{i+1}_{i+1}' for i in range(num_states)]),
+            '\t'.join([f'trns{i+1}{i+1}' for i in range(num_states)]),
             '\t'.join([f'disp{i+1}'  for i in range(num_states)]),
         ]
         print('iter\tlog-l\t\t' + '\t'.join(header_parts))

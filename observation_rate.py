@@ -88,7 +88,7 @@ def main():
     
     print('-' * 40)
     print(f'> Observations file: {args.obs}')
-    print(f'> Estimated observation rates written to: {args.out}')
+    print(f'> Output file for estimated observation rates: {args.out}')
     print(f'> Bin size: {args.bin_size}')
     print('-' * 40)
 
