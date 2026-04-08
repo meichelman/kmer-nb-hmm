@@ -55,7 +55,7 @@ def main():
     args = parser.parse_args()
     
     if args.obs is None or args.obs_rates is None:
-        print(parser.print_help())
+        print(print_script_usage())
         return
     
     print('-' * 40)
