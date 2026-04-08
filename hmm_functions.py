@@ -185,7 +185,6 @@ def viterbi(probabilities, transitions, init_start):
     return forwards_in, backtracks
 
 
-@njit
 def nb_neg_log_likelihood(params, gamma_s, obs, mutrates):
     '''Calculate negative log-likelihood of the data given the parameters for a single state, weighted by the posterior probability of being in that state'''
     e_s = np.exp(params[0])
