@@ -83,7 +83,7 @@ def main():
     args = parser.parse_args()
     
     if args.obs is None:
-        parser.print_help()
+        print(parser.print_help())
         return
     
     print('-' * 40)
