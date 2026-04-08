@@ -12,13 +12,13 @@ def train(obs_file, obs_rates_file, param_file, out_file):
     obs, mutrates = load_obs_and_obs_rates(obs_file, obs_rates_file)
 
     print('-' * 40)
-    print(f'> Number of windows: {len(obs)}.')
+    print(f'> Number of windows: {len(obs)}')
     print(f'> Number of k-mers = {obs.astype(np.int64).sum()}')
     print('-' * 40)
 
     print('Training HMM...')
     hmm_parameters = TrainModel(obs, mutrates, hmm_parameters)
-    print('Writing output.')
+    print('Writing output')
     write_HMM_to_file(hmm_parameters, out_file)
     print('Done')
     

@@ -138,7 +138,6 @@ def backward(emissions_probs, transitions, scales):
     return beta
 
 
-@njit
 def get_log_likelihood(hmm_parameters, observations, obs_rates):
     '''Calculate the log-likelihood of the data given the HMM parameters'''
     emissions_probs = emission_probailities(observations, obs_rates, hmm_parameters.emissions, hmm_parameters.dispersions)
