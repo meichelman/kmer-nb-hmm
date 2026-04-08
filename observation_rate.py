@@ -76,10 +76,9 @@ def print_script_usage():
 def main():
     parser = argparse.ArgumentParser(description=print_script_usage(), formatter_class=argparse.RawTextHelpFormatter)
     
-    observation_rate = parser.add_parser('Observation rate', help='Estimate the observation rate')
-    observation_rate.add_argument("-obs",help="Input file with observation data (required)", type=str, required = True)
-    observation_rate.add_argument("-out", metavar='',help="Output file with observation rates estimates (default: 'observation_rate.bed')", default = 'observation_rate.bed')
-    observation_rate.add_argument("-bin_size", metavar='',help="Parameter defining size of bins (default: 1 Mb)", type=int, default = 1_000_000)
+    parser.add_argument("-obs",help="Input file with observation data (required)", type=str, required = True)
+    parser.add_argument("-out", metavar='',help="Output file with observation rates estimates (default: 'observation_rate.bed')", default = 'observation_rate.bed')
+    parser.add_argument("-bin_size", metavar='',help="Parameter defining size of bins (default: 1 Mb)", type=int, default = 1_000_000)
     
     args = parser.parse_args()
     
