@@ -345,7 +345,7 @@ def Write_posterior_probs(obs, obs_rates, post_seq, post_path, viterbi_path, hmm
         out.write(f'start\tend\tcount\tobs_rate\t{state_names}posterior_state\tviterbi_state\n')
 
         i = 0
-        for (obs, obs_rate, posterior, post_state, viterbi_state) in zip(obs, obs_rates, post_seq, post_path, viterbi_path):
+        for (obs_i, obs_rate, posterior, post_state, viterbi_state) in zip(obs, obs_rates, post_seq, post_path, viterbi_path):
             posterior_to_print = '\t'.join([str(round(x, 4)) for x in posterior])
-            out.write(f'{i * window_size}\t{(i + 1) * window_size}\t{obs}\t{obs_rate}\t{posterior_to_print}\t\t{hmm_parameters.state_names[post_state]}\t\t{hmm_parameters.state_names[viterbi_state]}\n')
+            out.write(f'{i * window_size}\t{(i + 1) * window_size}\t{obs_i}\t{obs_rate}\t{posterior_to_print}\t{hmm_parameters.state_names[post_state]}\t{hmm_parameters.state_names[viterbi_state]}\n')
             i += 1
