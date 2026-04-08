@@ -9,7 +9,7 @@ def train(obs_file, obs_rates_file, param_file, out_file):
     
     print('Loading data...')
     hmm_parameters = read_HMM_parameters_from_file(param_file)
-    obs, mutrates = load_obs_and_obs_rates(obs_file, obs_rates_file)
+    obs, obs_rates, contig_offsets = load_obs_and_obs_rates(obs_file, obs_rates_file)
 
     print('-' * 40)
     print(f'> Number of windows: {len(obs)}')
@@ -17,8 +17,8 @@ def train(obs_file, obs_rates_file, param_file, out_file):
     print('-' * 40)
 
     print('Training HMM...')
-    hmm_parameters = TrainModel(obs, mutrates, hmm_parameters)
-    print('Writing output')
+    hmm_parameters = TrainModel(obs, obs_rates, hmm_parameters)
+    print('Writing output...')
     write_HMM_to_file(hmm_parameters, out_file)
     print('Done')
     

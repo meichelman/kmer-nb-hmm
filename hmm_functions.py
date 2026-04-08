@@ -82,7 +82,7 @@ def neg_binom_probability(k, lam, r):
 
 
 @njit
-def emission_probailities(observations, obs_rates, emissions, dispersions):
+def emission_probabilities(observations, obs_rates, emissions, dispersions):
     '''Calculate the emission probabilities for each observation and state'''
     num_obs = len(observations)
     num_states = len(emissions)          
@@ -141,7 +141,7 @@ def backward(emissions_probs, transitions, scales):
 
 def get_log_likelihood(hmm_parameters, observations, obs_rates):
     '''Calculate the log-likelihood of the data given the HMM parameters'''
-    emissions_probs = emission_probailities(observations, obs_rates, hmm_parameters.emissions, hmm_parameters.dispersions)
+    emissions_probs = emission_probabilities(observations, obs_rates, hmm_parameters.emissions, hmm_parameters.dispersions)
     _, scales = forward(emissions_probs, hmm_parameters.transitions, hmm_parameters.starting_probabilities)
     return np.sum(np.log(scales))
 
@@ -249,7 +249,7 @@ def TrainBaumWelsch(hmm_parameters, observations, obs_rates):
 
     num_states = len(hmm_parameters.starting_probabilities)
 
-    emissions_probs = emission_probailities(observations, obs_rates, hmm_parameters.emissions, hmm_parameters.dispersions)
+    emissions_probs = emission_probabilities(observations, obs_rates, hmm_parameters.emissions, hmm_parameters.dispersions)
     forward_probs, scales = forward(emissions_probs, hmm_parameters.transitions, hmm_parameters.starting_probabilities)
     backward_probs = backward(emissions_probs, hmm_parameters.transitions, scales)
 
