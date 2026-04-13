@@ -65,5 +65,5 @@ rule make_observation_rate:
         bin_size=obs_rate_bin_size
     localrule: True
     run:
-		szCommand = f"python observation_rate.py -obs {input} -out {output} -bin_size {params.bin_size}"
+        szCommand = f"python observation_rate.py -obs {input} -out {output} -bin_size {params.bin_size}"
 		shell(szCommand)
