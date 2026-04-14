@@ -11,5 +11,5 @@ train:
 
 decode:
   use_viterbi: False
-  output_path_file: paths.txt
+  output_path_file: path.txt
   output_tracts_file: tracts.txt
