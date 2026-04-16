@@ -300,8 +300,8 @@ def train_model(observations, obs_rates, hmm_parameters, epsilon = 1e-3, maxiter
     logoutput(hmm_parameters, previous_loglikelihood, 0)
     
     # Train parameters using Baum-Welch algorithm
-    # for iter in range(1, maxiterations):
-    for iter in range(1, 3):
+    for iter in range(1, maxiterations):
+    # for iter in range(1, 3):
         hmm_parameters = train_baum_welsch(hmm_parameters, observations, obs_rates) # Maximization
         new_loglikelihood = get_log_likelihood(hmm_parameters, observations, obs_rates) # Expectation
         
