@@ -1,4 +1,5 @@
 import json
+from tracemalloc import start
 import numpy as np
 from numba import njit
 from math import lgamma
@@ -348,7 +349,7 @@ def viterbi_path(emissions, hmm_parameters):
 # Write segments to output file
 # ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def write_posterior_probs(contig_slices, obs, obs_rates, posteriors, path, hmm_parameters, filename, window_size):
+def write_posterior_probs(contig_slices, obs, obs_rates, posteriors, path, hmm_parameters, filename, window_size, contig_lengths):
     posteriors = posteriors.T
 
     with open(filename, 'w') as out:
@@ -360,12 +361,12 @@ def write_posterior_probs(contig_slices, obs, obs_rates, posteriors, path, hmm_p
         for contig, sl in contig_slices.items():
             for local_i, (obs_i, obs_rate, post, state) in enumerate(zip(obs[sl], obs_rates[sl], posteriors[sl], path[sl])):
                 start = local_i * window_size
-                end = (local_i + 1) * window_size
+                end = min((local_i + 1) * window_size, contig_lengths[contig])
                 posterior_to_print = '\t'.join([str(round(x, 4)) for x in post])
                 out.write(f'{contig}\t{start}\t{end}\t{obs_i}\t{obs_rate}\t{posterior_to_print}\t{hmm_parameters.state_names[state]}\n')
-                
+            
 
-def write_tracts(contig_slices, path, hmm_parameters, filename, window_size):
+def write_tracts(contig_slices, path, hmm_parameters, filename, window_size, contig_lengths):
 
     with open(filename, 'w') as out:
         out.write(f'contig\tstart\tend\tlength\tstate\n')
@@ -379,7 +380,7 @@ def write_tracts(contig_slices, path, hmm_parameters, filename, window_size):
                 if i == len(contig_path) - 1 or contig_path[i + 1] != state:
                     tract_end = i + 1  # exclusive
                     start = tract_start * window_size
-                    end = tract_end * window_size
-                    length = tract_end - tract_start
+                    end = min(tract_end * window_size, contig_lengths[contig])
+                    length = end - start
                     out.write(f'{contig}\t{start}\t{end}\t{length}\t{hmm_parameters.state_names[state]}\n')
                     tract_start = i + 1

@@ -9,7 +9,7 @@ def decode(obs_file, obs_rates_file, param_file, decode_method, out_path_file, o
     
     print('Loading data...')
     hmm_parameters = read_HMM_parameters_from_file(param_file)
-    obs, obs_rates, contig_offsets, window_size = load_obs_and_obs_rates(obs_file, obs_rates_file)
+    obs, obs_rates, contig_offsets, window_size, contig_lengths = load_obs_and_obs_rates(obs_file, obs_rates_file)
 
     print('-' * 40)
     print(f'> Number of windows: {len(obs)}')
@@ -29,16 +29,16 @@ def decode(obs_file, obs_rates_file, param_file, decode_method, out_path_file, o
     all_posterior_probs = []
     all_paths = []
     
-    emissions_probs = emission_probabilities(obs, obs_rates, hmm_parameters.emissions, hmm_parameters.dispersions)
-    with open('emissions_probs.txt', 'w') as f:
-        # Header: one column per state
-        header = '\t'.join([f'state_{s}' for s in range(emissions_probs.shape[1])])
-        f.write('window\t' + header + '\n')
+    # emissions_probs = emission_probabilities(obs, obs_rates, hmm_parameters.emissions, hmm_parameters.dispersions)
+    # with open('emissions_probs.txt', 'w') as f:
+    #     # Header: one column per state
+    #     header = '\t'.join([f'state_{s}' for s in range(emissions_probs.shape[1])])
+    #     f.write('window\t' + header + '\n')
         
-        # One row per window
-        for i in range(emissions_probs.shape[0]):
-            row = '\t'.join(map(str, emissions_probs[i]))
-            f.write(f'{i}\t' + row + '\n')
+    #     # One row per window
+    #     for i in range(emissions_probs.shape[0]):
+    #         row = '\t'.join(map(str, emissions_probs[i]))
+    #         f.write(f'{i}\t' + row + '\n')
 
     
     print('Calculating posterior probabilities...')
@@ -68,14 +68,16 @@ def decode(obs_file, obs_rates_file, param_file, decode_method, out_path_file, o
         np.concatenate(all_paths),
         hmm_parameters,
         out_path_file,
-        window_size
+        window_size,
+        contig_lengths
     )
     write_tracts(
         contig_slices,
         np.concatenate(all_paths),
         hmm_parameters,
         out_tracts_file,
-        window_size
+        window_size,
+        contig_lengths
     )
 
     print('Done')
