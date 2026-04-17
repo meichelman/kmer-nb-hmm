@@ -331,9 +331,11 @@ def calculate_posterior_probabilities(emissions, hmm_parameters):
     return posterior_probabilities
 
 
-def pmap_path(posterior_probabilities):
+def pmap_path(posterior_probabilities, threshold = 0.5):
     """Get maximum posterior decoding path"""
-    path = np.argmax(posterior_probabilities, axis = 0)
+    # path = np.argmax(posterior_probabilities, axis = 0)
+    p_arc = posterior_probabilities[1, :]
+    path = (p_arc >= threshold).astype(int)
     return path 
 
 
