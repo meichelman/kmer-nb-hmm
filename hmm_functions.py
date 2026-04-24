@@ -1,5 +1,4 @@
 import json
-from tracemalloc import start
 import numpy as np
 from numba import njit
 from math import lgamma
@@ -280,6 +279,21 @@ def train_baum_welsch(hmm_parameters, observations, obs_rates):
 
     # Update emissions and dispersions
     new_emissions, new_dispersions = maximize_emissions_dispersions(posterior_probs, observations, obs_rates, hmm_parameters.emissions, hmm_parameters.dispersions)
+    
+    # Prevent label switching
+    if new_emissions[1] < new_emissions[0]:
+        new_emissions[[0, 1]] = new_emissions[[1, 0]]
+        new_dispersions[[0, 1]] = new_dispersions[[1, 0]]
+
+        new_starting_probabilities[[0, 1]] = new_starting_probabilities[[1, 0]]
+
+        new_transitions_matrix = new_transitions_matrix[[1, 0], :]
+        new_transitions_matrix = new_transitions_matrix[:, [1, 0]]
+        
+    # Prevent emissions collapsing to the same value
+    epsilon = 1e-3
+    if abs(new_emissions[1] - new_emissions[0]) < epsilon:
+        new_emissions[1] = new_emissions[0] + epsilon
 
     # Update transition probs
     new_transitions_matrix = np.zeros((num_states, num_states))
